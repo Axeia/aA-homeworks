@@ -64,3 +64,13 @@ describe "KnightPathFinder#build_move_tree" do
         kpf.children.first.value.to eq([[KnightPathFinder::valid_moves([0,0])]])
     end
 end
+
+describe "KnightPathFinder#find_path" do
+    it "Finds a path on the board for a knight" do
+        kpf = KnightPathFinder.new()
+        path = kpf.find_path([7,7])
+        expect(path).to be_a(Array)
+        expect(path.length).to be < 15
+        expect(path.length).to be > 5
+    end
+end
