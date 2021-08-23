@@ -1,11 +1,14 @@
+require_relative '00_tree_node.rb'
+
 class KnightPathFinder
     @@chess_board_size = 8
+    attr_accessor :root_node
     #Start by creating an instance variable, self.root_node that stores 
     #the knight's initial position in an instance of your PolyTreeNode class.
     def initialize(pos = [0,0])
         @pos = pos
         @considered_positions = [pos]
-        # build_move_tree(pos)
+        build_move_tree
     end
 
     #Returns array with all travel points e.g. find_path[3,3] starts from the
@@ -18,8 +21,22 @@ class KnightPathFinder
     #beginning with self.root_node Call this method in initialize;
     # You will traverse the move tree whenever #find_path is called. 
     def build_move_tree
-        root_pos = [0,0]
-        HashMap[root_pos] = new_move_positions()
+        self.root_node = PolyTreeNode.new(@pos)
+        # HashMap[root_pos] = new_move_positions()
+        nodes = [root_node]
+        until nodes.empty?
+            current_node = nodes.shift #Take first one, FIFO!
+
+            current_pos = current_node.value
+            current_new_move_positions = new_move_positions(current_pos)
+            current_new_move_positions.each do |moved_to_pos|
+                moved_to_node = PolyTreeNode.new(moved_to_pos)
+                # is a position you can move to from the current_node so it
+                # is a child node
+                current_node.add_child(moved_to_node) 
+                nodes << moved_to_node #Tag it onto the end
+            end
+        end
     end
 
     # Before we start #build_move_tree, you'll want to be able to find new 

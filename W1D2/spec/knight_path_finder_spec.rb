@@ -54,3 +54,13 @@ describe "KnightPathFinder#new_move_positions" do
         expect(kpf.new_move_positions([4,0])).to eq([[2,1], [6,1]])
     end
 end
+
+describe "KnightPathFinder#build_move_tree" do
+    it "Should set @root_node to a PolyTreeNode instance with many children" do        
+        kpf = KnightPathFinder.new()
+        expect(kpf.PolyTreeNode).to be_a(PolyTreeNode)
+        expect(kpf.children.empty?).to eq(false)
+        expect(kpf.children[]).to be_a(PolyTreeNode)
+        kpf.children.first.value.to eq([[KnightPathFinder::valid_moves([0,0])]])
+    end
+end
