@@ -1,5 +1,6 @@
 require 'rspec'
 require 'knight_path_finder'
+require '00_tree_node'
 
 describe "KnightPathFinder::valid_moves" do
     it "description" do
@@ -38,30 +39,29 @@ describe "KnightPathFinder#new_move_positions" do
                 [6,3],   [6,5]
         ]
         kpf = KnightPathFinder.new()
-        #First .new_move_positions call should fill kpf#@considered_positions
-        #That is however not available but it's the same as the return value
-        #which we do test below.
-        expect(kpf.new_move_positions([4,4])).to eq(
-            KnightPathFinder::valid_moves([4,4])
-        )
+        # #First .new_move_positions call should fill kpf#@considered_positions
+        # #That is however not available but it's the same as the return value
+        # #which we do test below.
+        # expect(kpf.new_move_positions([4,4])).to eq(
+        #     KnightPathFinder::valid_moves([4,4])
+        # )
 
-        #Second time calling it on the same location should yield no new results
-        #as everything was in @considered_positions
-        expect(kpf.new_move_positions([4,4])).to eq([])
+        # #Second time calling it on the same location should yield no new results
+        # #as everything was in @considered_positions
+        # expect(kpf.new_move_positions([4,4])).to eq([])
 
-        #Calling it on a position which would yield overlapping results
-        #should filter those overlaps ([[3,2], [5,2]]) out.
-        expect(kpf.new_move_positions([4,0])).to eq([[2,1], [6,1]])
+        # #Calling it on a position which would yield overlapping results
+        # #should filter those overlaps ([[3,2], [5,2]]) out.
+        # expect(kpf.new_move_positions([4,0])).to eq([[2,1], [6,1]])
     end
 end
 
 describe "KnightPathFinder#build_move_tree" do
     it "Should set @root_node to a PolyTreeNode instance with many children" do        
         kpf = KnightPathFinder.new()
-        expect(kpf.PolyTreeNode).to be_a(PolyTreeNode)
-        expect(kpf.children.empty?).to eq(false)
-        expect(kpf.children[]).to be_a(PolyTreeNode)
-        kpf.children.first.value.to eq([[KnightPathFinder::valid_moves([0,0])]])
+        expect(kpf.root_node).to be_a(PolyTreeNode)
+        expect(kpf.root_node.children.empty?).to eq(false)
+        expect(kpf.root_node.children.first).to be_a(PolyTreeNode)
     end
 end
 
@@ -72,5 +72,11 @@ describe "KnightPathFinder#find_path" do
         expect(path).to be_a(Array)
         expect(path.length).to be < 15
         expect(path.length).to be > 5
+        # => [[0, 0], [1, 2], [2, 4], [3, 6], [5, 5], [7, 6]]
+        # Doesn't have to be the same, but number of steps should be
+        expect(kpf.find_path([7, 6]).length).to eq(6)  
+         # => [[0, 0], [1, 2], [2, 0], [4, 1], [6, 2]]
+         # Doesn't have to be the same, but number of steps should be
+        expect(kpf.find_path([6, 2]).length).to eq(5)
     end
 end

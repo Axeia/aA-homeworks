@@ -15,7 +15,11 @@ class KnightPathFinder
     #root [0,0] and gets there by traveling to 2,1 first. So the return is 
     #[[0,0],[2,1],[3,3]]
     def find_path(pos)
-        destination = self.root_node.dfs(pos)#.dfs(pos)
+        destination = self.root_node.dfs(pos)
+        trace_path_back(destination)
+    end
+
+    def trace_path_back(destination)
         path = []
         until destination == nil
             path << destination.value
@@ -95,6 +99,3 @@ class KnightPathFinder
     end
 
 end
-
-kpf = KnightPathFinder.new()
-p kpf.find_path([7,7])
