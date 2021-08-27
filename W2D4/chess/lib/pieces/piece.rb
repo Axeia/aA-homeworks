@@ -1,5 +1,5 @@
 class Piece
-    attr_reader :color, :symbol
+    attr_reader :color, :symbol, :pos
 
     def initialize(color, board, pos)
         @color = color
@@ -18,11 +18,11 @@ class Piece
     end
 
     def valid_moves
-
+        []
     end
 
     def same_side?(piece)
-        color != :none && self.color == piece.color        
+        !(color == :none || piece.color == :none) && self.color == piece.color        
     end
 
     def pos=(val)

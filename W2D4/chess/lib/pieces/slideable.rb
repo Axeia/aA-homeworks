@@ -1,5 +1,5 @@
 module Slideable
-    def moves()
+    def valid_moves
         possible_moves = []
 
         move_dirs.each do |move_dir|
@@ -12,7 +12,6 @@ module Slideable
                 possible_moves += diagonal_moves
             end
         end
-
         possible_moves
     end
 
@@ -33,12 +32,13 @@ module Slideable
         moves = []
         v, h = @pos
 
-        while h >= 1 && h < 7
+        while Board::valid_pos?([v + v_dir, h + h_dir])
             h += h_dir
             v += v_dir
             new_pos = [v, h]
             #Empty spaces are always fair game
             if @board.empty?(new_pos)
+                p 'hai'
                 moves << new_pos
             # Taking an opposing piece is a valid move
             elsif @board.opposing_piece?(self, new_pos)                

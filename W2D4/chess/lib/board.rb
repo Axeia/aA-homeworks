@@ -3,6 +3,10 @@ require_relative 'pieces/pawn'
 require_relative 'pieces/rook'
 require_relative 'pieces/null_piece'
 require_relative 'pieces/bishop'
+require_relative 'pieces/queen'
+require_relative 'pieces/knight'
+require_relative 'pieces/king'
+require_relative 'pieces/null_piece'
 require 'colorize'
 
 class Board
@@ -73,8 +77,9 @@ class Board
         piece
     end
 
-    def render
+    def render(piece = nil)
         output = ''
+        highlighted_squares = piece.valid_moves
         
         @rows.each.with_index do |row, i|
             output += (i + 1).to_s + ' '
@@ -85,7 +90,16 @@ class Board
                 else
                     field = ' ' + piece.to_s + '  '
                 end
-                field = field.on_red if (i + j) % 2 == 0
+
+                if highlighted_squares.include?([i,j])
+                    if (i + j) % 2 == 0 
+                        field = field.on_light_magenta
+                    else
+                        field = field.on_magenta
+                    end
+                else
+                    field = field.on_red if (i + j) % 2 == 0 
+                end
                 output += field
             end
             output += "\n"
@@ -97,6 +111,7 @@ class Board
 
     def opposing_piece?(piece, pos)
         other_piece = self.[](pos)
+        return false if other_piece.instance_of?(NullPiece)
         !piece.same_side?(other_piece)
     end
 
@@ -116,8 +131,14 @@ class Board
         row[0] = Rook.new(color, self, [line, 0])
         row[7] = Rook.new(color, self, [line, 7])
 
-        row[2] = Bishop.new(color, self, [line, 0])
-        row[5] = Bishop.new(color, self, [line, 0])
+        row[1] = Knight.new(color, self, [line, 1])
+        row[6] = Knight.new(color, self, [line, 6])
+
+        row[2] = Bishop.new(color, self, [line, 2])
+        row[5] = Bishop.new(color, self, [line, 5])        
+        
+        row[3] = Queen.new(color, self, [line, 3])
+        row[4] = King.new(color, self, [line, 4])
     end
 end
 
@@ -128,18 +149,21 @@ if __FILE__ == $0
     # p board.move_piece([1,1], [4,4]) #Expect to have moved the piece 
     # p board.piece([0,0]) # Should throw NoPieceAtPosError after above line
     # p board.piece([4,4]) # Should be the same piece as the first printed line
-    board.move_piece([0,0],[3,1])
-    board.move_piece([7,2], [4,3])
-    rook = board[[3,1]]
+    # board.move_piece([0,0],[3,1])
+    # board.move_piece([7,2], [4,3])
+    piece = board[[1,4]]
     # p rook.horizontal_moves
     # p rook.vertical_moves
     
-    puts board.render
-    puts "Rook moves"
-    p rook.moves
-    puts "Bishop moves"
-    bishop = board[[4,3]]
-    p bishop.moves
+    puts board.render(piece)
+    # puts piece.class.name + " moves"
+    # p piece.valid_moves
+    # puts "Bishop moves"
+    # bishop = board[[4,3]]
+    # p bishop.moves
     # p rook.same_side?(board[[6,1]])
     # p rook.moves
+
+    board.move_piece([6,3], [2,3])   #2,3
+    puts board.render(piece)
 end
