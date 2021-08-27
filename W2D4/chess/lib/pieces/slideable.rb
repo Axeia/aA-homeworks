@@ -17,23 +17,16 @@ module Slideable
     end
 
     def vertical_moves 
-        slide_vertical(-1) + slide_vertical(1)
-    end
-
-    def slide_vertical(direction)
-        slide(direction, 0)
+        slide(-1, 0) + slide(1, 0)
     end
 
     def horizontal_moves
-        slide_horizontal(-1) + slide_horizontal(1)
-    end
-
-    def slide_horizontal(direction)
-        slide(0, direction)
+        slide(0, -1) + slide(0, 1)
     end
 
     def diagonal_moves 
-        # slide(-1, -1, )
+        #top-left       top-right      bottom-left    bottom-right
+        slide(-1, -1) + slide(-1, 1) + slide(1, -1) + slide(1, 1)
     end
 
     def slide(v_dir, h_dir)
@@ -44,11 +37,14 @@ module Slideable
             h += h_dir
             v += v_dir
             new_pos = [v, h]
+            #Empty spaces are always fair game
             if @board.empty?(new_pos)
                 moves << new_pos
+            # Taking an opposing piece is a valid move
             elsif @board.opposing_piece?(self, new_pos)                
                 moves << new_pos
                 return moves
+            # Within bounds, not empty and not opposing = own piece.
             else # own piece
                 return moves
             end

@@ -2,6 +2,7 @@ require_relative 'pieces/piece'
 require_relative 'pieces/pawn'
 require_relative 'pieces/rook'
 require_relative 'pieces/null_piece'
+require_relative 'pieces/bishop'
 require 'colorize'
 
 class Board
@@ -111,8 +112,12 @@ class Board
     end
 
     def set_up_backline(line, color)
-        @rows[line][0] = Rook.new(color, self, [line, 0])
-        @rows[line][7] = Rook.new(color, self, [line, 7])
+        row = @rows[line]
+        row[0] = Rook.new(color, self, [line, 0])
+        row[7] = Rook.new(color, self, [line, 7])
+
+        row[2] = Bishop.new(color, self, [line, 0])
+        row[5] = Bishop.new(color, self, [line, 0])
     end
 end
 
@@ -124,15 +129,17 @@ if __FILE__ == $0
     # p board.piece([0,0]) # Should throw NoPieceAtPosError after above line
     # p board.piece([4,4]) # Should be the same piece as the first printed line
     board.move_piece([0,0],[3,1])
-    puts board.render
+    board.move_piece([7,2], [4,3])
     rook = board[[3,1]]
-    p rook.slide_horizontal(1)
-    p rook.slide_horizontal(-1)
-    p rook.horizontal_moves
-    p rook.slide_vertical(1)
-    p rook.slide_vertical(-1)
-    p rook.vertical_moves
+    # p rook.horizontal_moves
+    # p rook.vertical_moves
+    
+    puts board.render
+    puts "Rook moves"
     p rook.moves
-    p rook.same_side?(board[[6,1]])
+    puts "Bishop moves"
+    bishop = board[[4,3]]
+    p bishop.moves
+    # p rook.same_side?(board[[6,1]])
     # p rook.moves
 end
