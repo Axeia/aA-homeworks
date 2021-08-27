@@ -21,7 +21,7 @@ module Slideable
     end
 
     def slide_vertical(direction)
-        slide(direction, 0){ |v, h| v >= 1 && v < 7  }
+        slide(direction, 0)
     end
 
     def horizontal_moves
@@ -29,14 +29,18 @@ module Slideable
     end
 
     def slide_horizontal(direction)
-        slide(0, direction){ |v, h| h >= 1 && h < 7 }
+        slide(0, direction)
     end
 
-    def slide(v_dir, h_dir, &prc)
+    def diagonal_moves 
+        # slide(-1, -1, )
+    end
+
+    def slide(v_dir, h_dir)
         moves = []
         v, h = @pos
 
-        while prc.call(v, h)
+        while h >= 1 && h < 7
             h += h_dir
             v += v_dir
             new_pos = [v, h]

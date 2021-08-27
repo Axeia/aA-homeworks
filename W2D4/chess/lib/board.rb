@@ -1,7 +1,7 @@
-require_relative 'piece'
-require_relative 'pawn'
-require_relative 'rook'
-require_relative 'null_piece'
+require_relative 'pieces/piece'
+require_relative 'pieces/pawn'
+require_relative 'pieces/rook'
+require_relative 'pieces/null_piece'
 require 'colorize'
 
 class Board
