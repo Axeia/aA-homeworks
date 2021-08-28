@@ -3,18 +3,6 @@ require_relative 'pieces/null_piece'
 require 'colorize'
 require_relative 'cursor'
 
-# class Display
-#     def initialize(board)
-#         @cursor = Cursor.new([0,0], board)
-#         @board = board
-#     end
-# end
-
-# if __FILE__ == $0
-#     board = Board.new
-#     display = Display.new(board)
-# end
-
 class Display
     attr_reader :board, :notifications, :cursor
 
@@ -46,8 +34,11 @@ class Display
 
                 if highlighted_squares.include?([i,j])
                     field = highlight(field, checkered?(i,j))
-                else #Not highlighted             
-                    if has_cursor?(i,j)
+                else #Not highlighted
+                    if has_cursor?(i,j) && @cursor.selected
+                        p String.colors
+                        field = field.on_light_black
+                    elsif has_cursor?(i,j)
                         field = field.on_light_blue
                     else
                         field = field.on_red if checkered?(i, j)

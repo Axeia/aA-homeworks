@@ -84,6 +84,7 @@ class Cursor
   def handle_key(key)
     case key
     when :return, :space
+      toggle_selected
       return @cursor_pos
     when :left, :right, :down, :up
       update_pos(MOVES[key])
@@ -93,6 +94,10 @@ class Cursor
     else
       puts 'Unhandled: ' + key.to_s
     end
+  end
+
+  def toggle_selected
+    @selected = !@selected
   end
 
   def update_pos(diff)
