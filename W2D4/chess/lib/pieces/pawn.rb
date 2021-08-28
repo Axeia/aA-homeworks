@@ -13,18 +13,16 @@ class Pawn < Piece
     
     def valid_moves
         v, h = @pos
-        valid_moves = []
-        if at_start_row?
-            valid_moves << [v + (forward * 2), h]
-        else
-            valid_moves << [v + forward, h] 
-        end
+        valid_moves = [[v + forward, h]]
+        valid_moves << [v + (forward * 2), h] if at_start_row?
 
-        front_left  = [v + forward, h+1]
-        valid_moves << front_left if @board.opposing_piece?(self, front_left)
-
-        front_right = [v + forward, h-1]
-        valid_moves << front_right if @board.opposing_piece?(self, front_right)
+        positions = { 
+            front_left:  [v + forward, h+1], 
+            front_right: [v + forward, h-1] 
+        }
+        valid_moves += positions.select{ 
+            |k, v| Board::valid_pos?(v) && @board.opposing_piece?(self, v)
+        }.values
 
         valid_moves.select{ |m| Board::valid_pos?(m) }
     end

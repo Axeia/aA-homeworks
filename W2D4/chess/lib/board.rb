@@ -14,6 +14,8 @@ class Board
     class InvalidEndPosError < StandardError; end
     class InvalidPosError < StandardError; end
 
+    attr_reader :rows
+
     def initialize
         @rows = Array.new(8){ Array.new(8) }
         set_up_board
@@ -123,7 +125,7 @@ class Board
 
     def set_up_pawns
         (0..7).to_a.each{ |h| @rows[1][h] = Pawn.new(:black, self, [1, h]) }
-        (0..7).to_a.each{ |h| @rows[6][h] = Pawn.new(:white, self, [1, h]) }
+        (0..7).to_a.each{ |h| @rows[6][h] = Pawn.new(:white, self, [6, h]) }
     end
 
     def set_up_backline(line, color)
@@ -140,30 +142,4 @@ class Board
         row[3] = Queen.new(color, self, [line, 3])
         row[4] = King.new(color, self, [line, 4])
     end
-end
-
-if __FILE__ == $0
-    board = Board.new
-    # p board.piece([3,3]) # Expect NoPieceAtPosError
-    # p board.piece([1,1]).to_s # Expect to execute without error
-    # p board.move_piece([1,1], [4,4]) #Expect to have moved the piece 
-    # p board.piece([0,0]) # Should throw NoPieceAtPosError after above line
-    # p board.piece([4,4]) # Should be the same piece as the first printed line
-    # board.move_piece([0,0],[3,1])
-    # board.move_piece([7,2], [4,3])
-    piece = board[[1,4]]
-    # p rook.horizontal_moves
-    # p rook.vertical_moves
-    
-    puts board.render(piece)
-    # puts piece.class.name + " moves"
-    # p piece.valid_moves
-    # puts "Bishop moves"
-    # bishop = board[[4,3]]
-    # p bishop.moves
-    # p rook.same_side?(board[[6,1]])
-    # p rook.moves
-
-    board.move_piece([6,3], [2,3])   #2,3
-    puts board.render(piece)
 end
