@@ -1,15 +1,17 @@
 require_relative 'piece'
+require_relative 'stepable'
 
 class King < Piece
+    include Stepable
+
     def initialize(color, board, pos)
         super
         @symbol = '♚'
     end
 
-    def moves
-        #up to eight possible moves
+    def move_diffs
         v, h = @pos
-        positions = {
+        {
             :top_left       => [v-1, h-1],    
             :top            => [v-1, h],
             :top_right      => [v-1, h+1],
@@ -20,13 +22,6 @@ class King < Piece
             :bottom_left    => [v+1, h-1],        
             :bottom         => [v+1, h],    
             :bottom_right   => [v+1, h+1]
-        }
-
-        valid_positions = []
-        valid_positions = positions.select{ |k, val| Board::valid_pos?(val) }\
-        .values
-        valid_positions.select{ 
-            |p| @board.empty?(p) || @board.opposing_piece?(self, p) 
         }
     end
 end

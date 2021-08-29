@@ -81,7 +81,7 @@ if __FILE__ == $0
     board.move_piece_str('e7, e5')
     board.move_piece_str('g2, g4')
     board.move_piece_str('d8, h4')
-    # display.keep_rendering
+    display.keep_rendering
     display.render
     p board.in_check?(:white)
     p board.checkmate?(:white)

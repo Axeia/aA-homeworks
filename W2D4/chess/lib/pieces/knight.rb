@@ -1,15 +1,17 @@
 require_relative 'piece'
+require_relative 'stepable'
 
 class Knight < Piece
+    include Stepable
+
     def initialize(color, board, pos)
         super
         @symbol = '♞'
     end
 
-    def moves
-        #up to eight possible moves
+    def move_diffs
         v, h = @pos
-        positions = {
+        {
             :left_left_up        => [v-1, h-1-1],    
             :up_up_left          => [v-1-1, h-1],
 
@@ -21,15 +23,6 @@ class Knight < Piece
 
             :down_down_left      => [v+1+1, h-1],    
             :left_left_down      => [v+1, h-1-1]    
-        }
-
-        valid_positions = []
-        valid_positions = positions.select do |k, val| 
-            Board::valid_pos?(val) 
-        end
-        valid_positions = valid_positions.values
-        valid_positions.select{ 
-            |p| @board.empty?(p) || @board.opposing_piece?(self, p) 
         }
     end
 end
