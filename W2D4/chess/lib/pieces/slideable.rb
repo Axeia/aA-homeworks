@@ -1,5 +1,5 @@
 module Slideable
-    def valid_moves
+    def moves
         possible_moves = []
 
         move_dirs.each do |move_dir|
@@ -38,7 +38,6 @@ module Slideable
             new_pos = [v, h]
             #Empty spaces are always fair game
             if @board.empty?(new_pos)
-                p 'hai'
                 moves << new_pos
             # Taking an opposing piece is a valid move
             elsif @board.opposing_piece?(self, new_pos)                

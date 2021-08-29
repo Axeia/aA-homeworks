@@ -6,7 +6,7 @@ class King < Piece
         @symbol = '♚'
     end
 
-    def valid_moves
+    def moves
         #up to eight possible moves
         v, h = @pos
         positions = {

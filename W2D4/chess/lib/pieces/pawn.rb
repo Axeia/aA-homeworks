@@ -11,7 +11,7 @@ class Pawn < Piece
 
     end
     
-    def valid_moves
+    def moves
         v, h = @pos
         valid_moves = [[v + forward, h]]
         valid_moves << [v + (forward * 2), h] if at_start_row?

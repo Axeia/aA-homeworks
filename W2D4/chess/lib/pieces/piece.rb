@@ -14,7 +14,11 @@ class Piece
     end
 
     def empty?
+        self.instance_of?(NullPiece)
+    end
 
+    def moves
+        []
     end
 
     def valid_moves

@@ -68,6 +68,23 @@ class Board
         @rows[end_v][end_h] = piece
         piece.pos = end_pos
     end
+    
+    
+    def move_piece_str(str)
+        str_moves = str.split(', ')
+        from = str_to_array_pos(str_moves[0])
+        to   = str_to_array_pos(str_moves[1])
+        move_piece(from, to)
+    end
+
+    def str_to_array_pos(str)
+        letter, number = str.split('')
+        
+        l2i = { 'a'=>0, 'b'=>1, 'c'=>2, 'd'=>3, 'e'=>4, 'f'=>5, 'g'=>6, 'h'=>7 }
+        n2i = { '8'=>0, '7'=>1, '6'=>2, '5'=>3, '4'=>4, '3'=>5, '2'=>6, '1'=>7 }
+        [n2i[number], l2i[letter]]
+    end
+
 
     def piece(pos)
         v, h = pos
@@ -81,7 +98,7 @@ class Board
 
     def render(piece = nil)
         output = ''
-        highlighted_squares = piece.valid_moves
+        highlighted_squares = piece.moves
         
         @rows.each.with_index do |row, i|
             output += (i + 1).to_s + ' '
@@ -115,6 +132,35 @@ class Board
         other_piece = self.[](pos)
         return false if other_piece.instance_of?(NullPiece)
         !piece.same_side?(other_piece)
+    end
+
+    def pieces(color = nil)
+        if color != nil
+            rows.flatten.select{ |piece| !piece.empty? && piece.color == color }
+        else
+            rows.flatten.select{ |piece| !piece.empty? }
+        end
+    end
+
+    def in_check?(color)
+        king = pieces(color).find{ |p| p.instance_of?(King) }
+        opposite_color = color == :white ? :black : :white
+        in_check = pieces(opposite_color).any? do |piece|
+            piece.moves.include?(king.pos)
+        end
+        in_check
+    end
+
+    def checkmate?(color)
+        if in_check?(color)
+            c_pieces = pieces(color).select{ |p| !p.valid_moves.empty? }
+            c_pieces.each do |pi|
+                p pi.class.name.to_s + pi.symbol
+            end
+            return false
+        end
+        
+        false
     end
 
     private 

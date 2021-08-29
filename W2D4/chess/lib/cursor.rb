@@ -106,7 +106,4 @@ class Cursor
     new_cursor_pos = [c_v + v, c_h + h] 
     @cursor_pos = new_cursor_pos if Board::valid_pos?(new_cursor_pos)
   end
-
-  def render
-  end
 end

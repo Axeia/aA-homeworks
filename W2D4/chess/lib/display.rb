@@ -24,11 +24,11 @@ class Display
         cursor_piece = @board[@cursor.cursor_pos]
         highlighted_squares = []
         unless cursor_piece.instance_of?(NullPiece)
-            highlighted_squares = @board.rows[c_v][c_h].valid_moves
+            highlighted_squares = @board.rows[c_v][c_h].moves
         end
 
         @board.rows.each.with_index do |row, i|
-            output += (i + 1).to_s + ' '
+            output += (8 - i).to_s + ' '
             row.each.with_index do |piece, j|
                 field = ' ' + piece.to_s + '  '
 
@@ -36,7 +36,6 @@ class Display
                     field = highlight(field, checkered?(i,j))
                 else #Not highlighted
                     if has_cursor?(i,j) && @cursor.selected
-                        p String.colors
                         field = field.on_light_black
                     elsif has_cursor?(i,j)
                         field = field.on_light_blue
@@ -78,5 +77,14 @@ end
 if __FILE__ == $0
     board = Board.new()
     display = Display.new(board)
-    display.keep_rendering
+    board.move_piece_str('f2, f3')
+    board.move_piece_str('e7, e5')
+    board.move_piece_str('g2, g4')
+    board.move_piece_str('d8, h4')
+    # display.keep_rendering
+    display.render
+    p board.in_check?(:white)
+    p board.checkmate?(:white)
+    # p board.checkmate?(:black)
+    
 end
