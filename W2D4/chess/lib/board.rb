@@ -142,8 +142,12 @@ class Board
         end
     end
 
+    def find_king(color)
+        pieces(color).find{ |possible_king| possible_king instance_of(King) }
+    end
+
     def in_check?(color)
-        king = pieces(color).find{ |p| p.instance_of?(King) }
+        king = find_king(color)
         opposite_color = color == :white ? :black : :white
         in_check = pieces(opposite_color).any? do |piece|
             piece.moves.include?(king.pos)
