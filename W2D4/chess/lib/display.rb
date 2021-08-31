@@ -4,12 +4,13 @@ require 'colorize'
 require_relative 'cursor'
 
 class Display
-    attr_reader :board, :notifications, :cursor
+    attr_reader :board, :notifications, :cursor, :debug
 
-    def initialize(board)
+    def initialize(board, debug = false)
         @board = board
         @cursor = Cursor.new([0, 0], board)
         @notifications = {}
+        @debug = debug
     end
 
     def render
@@ -72,6 +73,10 @@ class Display
             self.render
         end
     end
+
+    def toggle_debug
+        @debug = !debug
+    end
 end
 
 if __FILE__ == $0
@@ -81,10 +86,8 @@ if __FILE__ == $0
     board.move_piece_str('e7, e5')
     board.move_piece_str('g2, g4')
     board.move_piece_str('d8, h4')
-    display.keep_rendering
+    # display.keep_rendering
     display.render
     p board.in_check?(:white)
-    p board.checkmate?(:white)
-    # p board.checkmate?(:black)
-    
+    p board.checkmate?(:white)    
 end

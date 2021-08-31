@@ -6,6 +6,8 @@ class Piece
         @board = board 
         @pos   = pos
         @symbol = 'X'
+
+        board.add_piece(self, pos)
     end
 
     def to_s
@@ -22,7 +24,7 @@ class Piece
     end
 
     def valid_moves
-        []
+        moves.reject{ |end_pos| move_into_check?(end_pos) }
     end
 
     def same_side?(piece)
@@ -35,6 +37,9 @@ class Piece
 
     #private
     def move_into_check?(end_pos)
-        return true
+        dup_board = @board.dup
+        dup_piece = dup_board[@pos]
+        dup_board.move_piece!(dup_piece.pos, end_pos)
+        dup_board.in_check?(dup_piece.color)
     end
 end

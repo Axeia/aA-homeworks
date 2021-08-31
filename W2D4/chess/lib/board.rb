@@ -13,16 +13,16 @@ class Board
     class NoPieceAtPosError < StandardError; end
     class InvalidEndPosError < StandardError; end
     class InvalidPosError < StandardError; end
+    class IlligalMoveForPieceError < StandardError; end
 
     attr_reader :rows
 
-    def initialize
-        @rows = Array.new(8){ Array.new(8) }
-        set_up_board
+    def initialize(set_things_up = true)
+        @rows = Array.new(8){ Array.new(8) { NullPiece.instance } }
+        set_up_board if set_things_up
     end
 
     def set_up_board
-        clear_board
         set_up_pawns
         set_up_backline(0, :black)
         set_up_backline(7, :white)
@@ -38,10 +38,14 @@ class Board
 
     def []=(pos, piece)        
         raise InvalidPosError.new("Invalid position (#{pos.join(',')})")\
-        unless valid_pos?(pos)
+        unless Board::valid_pos?(pos)
 
         v, h = pos
         @rows[v][h] = piece
+    end
+
+    def add_piece(piece, pos)
+        self[pos] = piece
     end
 
     def self.valid_pos?(pos)
@@ -59,9 +63,10 @@ class Board
         
         piece = piece(start_pos) #.dup? # May throw NoPieceAtPosError
 
-        raise InvalidEndPosError "Cannot move piece #{piece.class.name} to "\
-        "#{end_pos.join('n')}"\
-        unless piece.move_into_check?(end_pos)
+        raise InvalidEndPosError.new(
+            "Cannot move piece #{piece.class.name} from #{start_pos.join(',')}"\
+            " to #{end_pos.join(',')}"
+        ) unless piece.move_into_check?(end_pos)
 
         # No errors - go ahead!
         @rows[start_v][start_h] = NullPiece.instance
@@ -69,12 +74,25 @@ class Board
         piece.pos = end_pos
     end
     
+    #Only really to be called by Piece#move_into_check
+    def move_piece!(start_pos, end_pos)
+        piece = piece(start_pos)
+
+        raise IlligalMoveForPieceError.new(
+            "Hold on there, a #{piece.class.name} cannot move like that."
+        ) unless piece.moves.include?(end_pos)
+
+        self[end_pos] = piece
+        self[start_pos] = NullPiece.instance
+        piece.pos = end_pos
+        nil
+    end
     
     def move_piece_str(str)
         str_moves = str.split(', ')
         from = str_to_array_pos(str_moves[0])
         to   = str_to_array_pos(str_moves[1])
-        move_piece(from, to)
+        move_piece!(from, to)
     end
 
     def str_to_array_pos(str)
@@ -143,7 +161,7 @@ class Board
     end
 
     def find_king(color)
-        pieces(color).find{ |possible_king| possible_king instance_of(King) }
+        pieces(color).find{ |possible_king| possible_king.instance_of?(King) }
     end
 
     def in_check?(color)
@@ -156,22 +174,32 @@ class Board
     end
 
     def checkmate?(color)
+        return pieces(color).all?{ |p| p.valid_moves.empty? }\
         if in_check?(color)
-            c_pieces = pieces(color).select{ |p| !p.valid_moves.empty? }
-            c_pieces.each do |pi|
-                p pi.class.name.to_s + pi.symbol
-            end
-            return false
-        end
         
         false
     end
 
-    private 
-
-    def clear_board
-        (0..7).each{ |v| (0..7).each{ |h| @rows[v][h] = NullPiece.instance } } 
+    def dup
+        #Re-creates everything using .new so nothing is shared but actually
+        #duplicated.
+        dup_board = Board.new(false) #Clear board, all NullPiece's
+        pieces.each{ |p| p.class.new(p.color, dup_board, p.pos.dup) }
+        dup_board
     end
+
+    def simple_render
+        output = ""
+        @rows.each do |col|
+            col.each do |piece|
+                output += ' ' + piece.to_s + '  '
+            end
+            output += "\n"
+        end
+        puts output
+    end
+
+    private 
 
     def set_up_pawns
         (0..7).to_a.each{ |h| @rows[1][h] = Pawn.new(:black, self, [1, h]) }
