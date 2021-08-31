@@ -7,10 +7,6 @@ class Pawn < Piece
         @initial_pos = pos.dup
     end
     
-    def at_start_row?
-
-    end
-    
     def moves
         v, h = @pos
         valid_moves = []

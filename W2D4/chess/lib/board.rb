@@ -90,12 +90,12 @@ class Board
     
     def move_piece_str(str)
         str_moves = str.split(', ')
-        from = str_to_array_pos(str_moves[0])
-        to   = str_to_array_pos(str_moves[1])
+        from = Board::str_to_array_pos(str_moves[0])
+        to   = Board::str_to_array_pos(str_moves[1])
         move_piece!(from, to)
     end
 
-    def str_to_array_pos(str)
+    def self.str_to_array_pos(str)
         letter, number = str.split('')
         
         l2i = { 'a'=>0, 'b'=>1, 'c'=>2, 'd'=>3, 'e'=>4, 'f'=>5, 'g'=>6, 'h'=>7 }
