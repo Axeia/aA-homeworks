@@ -14,6 +14,7 @@ class Board
     class InvalidEndPosError < StandardError; end
     class InvalidPosError < StandardError; end
     class IlligalMoveForPieceError < StandardError; end
+    class WrongColorError < StandardError ; end
 
     attr_reader :rows
 
@@ -57,16 +58,22 @@ class Board
         self.[](pos).instance_of?(NullPiece)
     end
 
-    def move_piece(start_pos, end_pos)
+    def move_piece(color, start_pos, end_pos)
         start_v, start_h = start_pos
         end_v, end_h     = end_pos
         
         piece = piece(start_pos) #.dup? # May throw NoPieceAtPosError
-
+        raise WrongColorError.new(
+            "Sorry player #{color}, you're not allowed to play with "\
+            "#{piece.color}'s pieces"
+        )\
+        unless piece.color == color
+        
+        valid_moves = piece.moves 
         raise InvalidEndPosError.new(
             "Cannot move piece #{piece.class.name} from #{start_pos.join(',')}"\
-            " to #{end_pos.join(',')}"
-        ) unless piece.move_into_check?(end_pos)
+            " to #{end_pos.join(',')}. Valid positions are: #{moves.join(',')}"
+        ) unless valid_moves.include?(end_pos)
 
         # No errors - go ahead!
         @rows[start_v][start_h] = NullPiece.instance
@@ -103,13 +110,18 @@ class Board
         [n2i[number], l2i[letter]]
     end
 
+    def self.chess_index(array)
+        i2l = { 0=>'a', 1=>'b', 2=>'c', 3=>'d', 4=>'e', 5=>'f', 6=>'g', 7=>'h' }
+        i2n = { 0=>'8', 1=>'7', 2=>'6', 3=>'5', 4=>'4', 5=>'3', 6=>'2', 7=>'1' }
+        i2l[array[1]]+i2n[array[0]]
+    end
 
     def piece(pos)
         v, h = pos
         piece = @rows[v][h]
         
-        raise NoPieceAtPosError "No piece found at pos #{pos.join(',')}}"\
-        unless piece.is_a?(Piece)
+        raise NoPieceAtPosError.new("No piece found at pos #{pos.join(',')}}")\
+        if piece.instance_of?(NullPiece)
 
         piece
     end
@@ -123,19 +135,19 @@ class Board
             row.each.with_index do |piece, j|
                 field = ''
                 if piece == nil
-                    field = '    '
+                    field = '    '.on_green
                 else
-                    field = ' ' + piece.to_s + '  '
+                    field = (' ' + piece.to_s + '  ').on_green
                 end
 
                 if highlighted_squares.include?([i,j])
                     if (i + j) % 2 == 0 
-                        field = field.on_light_magenta
-                    else
                         field = field.on_magenta
+                    else
+                        field = field.on_light_magenta
                     end
                 else
-                    field = field.on_red if (i + j) % 2 == 0 
+                    field = field.on_light_green if (i + j) % 2 == 0 
                 end
                 output += field
             end

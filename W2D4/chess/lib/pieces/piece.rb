@@ -11,8 +11,8 @@ class Piece
     end
 
     def to_s
-        return symbol.yellow if color == :black
-        return symbol.light_green if color == :white
+        return symbol.black if color == :black
+        return symbol.white if color == :white
     end
 
     def empty?

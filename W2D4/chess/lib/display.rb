@@ -10,16 +10,18 @@ class Display
         @board = board
         @cursor = Cursor.new([0, 0], board)
         @notifications = {}
+        @messages = []
         @debug = debug
     end
 
     def render
         system("clear")
         puts "Press ◄ ▲ ▼ ►, hjkl or WASD to move. Space or enter to confirm/select."
-        board_render
+        render_board
+        render_messages
     end
 
-    def board_render
+    def render_board
         output = ''
         c_v, c_h = @cursor.cursor_pos
         cursor_piece = @board[@cursor.cursor_pos]
@@ -31,17 +33,16 @@ class Display
         @board.rows.each.with_index do |row, i|
             output += (8 - i).to_s + ' '
             row.each.with_index do |piece, j|
-                field = ' ' + piece.to_s + '  '
+                checkered = checkered?(i,j)                
+                field = color_field(' ' + piece.to_s + '  ', checkered)
 
                 if highlighted_squares.include?([i,j])
-                    field = highlight(field, checkered?(i,j))
+                    field = color_field_highlight(field, checkered)
                 else #Not highlighted
                     if has_cursor?(i,j) && @cursor.selected
                         field = field.on_light_black
                     elsif has_cursor?(i,j)
-                        field = field.on_light_blue
-                    else
-                        field = field.on_red if checkered?(i, j)
+                        field = color_field_cursor(field, checkered)
                     end
                 end
                 output += field
@@ -53,8 +54,16 @@ class Display
         puts output
     end
 
-    def highlight(field, checkered)
-        checkered ? field.on_light_magenta : field.on_magenta
+    def color_field_highlight(field, checkered)
+        checkered ? field.on_light_cyan : field.on_cyan
+    end
+
+    def color_field_cursor(field, checkered)
+        checkered ? field.on_light_green : field.on_green
+    end
+
+    def color_field(field, checkered)
+        checkered ? field.on_blue : field.on_light_blue
     end
 
     def checkered?(v, h)
@@ -64,6 +73,18 @@ class Display
     def has_cursor?(v, h)
         c_v, c_h = @cursor.cursor_pos
         v == c_v && h == c_h
+    end
+    
+    def add_message(message)
+        @messages << message
+    end
+
+    def clear_messages()
+        @messages = []
+    end
+
+    def render_messages
+        @messages.each{ |message| puts message }
     end
 
     def keep_rendering

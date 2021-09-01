@@ -21,8 +21,28 @@ class Game
 
     def play
         until won? #game.won
-            @current_player.make_move
-            # @board[[0,4]] = NullPiece.instance
+            piece_pos, destination = [nil, nil] 
+            begin 
+                piece_pos, destination = @current_player.make_move
+                
+            rescue HumanPlayer::InputError => e                
+                @display.cursor.selected = false
+                @display.add_message(e.message)
+                redo
+            end
+            @display.board.move_piece(
+                @current_player.color, 
+                piece_pos, 
+                destination
+            )
+            piece_name = @board[piece_pos].class.name
+            @display.clear_messages
+            @display.add_message (
+                @current_player.color.to_s.capitalize + " moved #{piece_name} "\
+                "#{Board::chess_index(piece_pos)} "\
+                "to #{Board::chess_index(destination)}."
+            )
+
             swap_turn!
         end
 
